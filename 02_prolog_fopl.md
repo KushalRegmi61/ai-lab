@@ -41,6 +41,7 @@ easy(X):- basket_weaving_course(X).
 
 GOAL: likes(steve, X).      % X = bk301
 ```
+> **Warning you will see:** `Clauses of course/1 are not together in the source-file`. SWI-Prolog wants all clauses of one predicate written consecutively. It is only a warning, but keep facts of the same predicate grouped — or add `:- discontiguous course/1.` at the top.
 **Resolution proof (write this out if asked to "prove by resolution"):**
 1. `basket_weaving_course(bk301)` — given fact.
 2. By rule `easy(X):-basket_weaving_course(X)`: `easy(bk301)`.
@@ -108,13 +109,19 @@ in_room(bananas). in_room(chair). in_room(monkey).
 dexterous(monkey). tall(chair).
 can_move(monkey, chair, bananas). can_climb(monkey, chair).
 
-can_reach(X,Y):- dexterous(X), close(X,Y).
-close(X,Z):- get_on(X,Y), under(Y,Z), tall(Y).
+can_reach(X,Y):- dexterous(X), near(X,Y).
+near(X,Z):- get_on(X,Y), under(Y,Z), tall(Y).
 get_on(X,Y):- can_climb(X,Y).
 under(Y,Z):- in_room(X), in_room(Y), in_room(Z), can_move(X,Y,Z).
 
 GOAL: can_reach(monkey, bananas).   % true
 ```
+> ### ⚠️ Built-in name clash — `close/2` renamed to `near/2`
+> The textbook version of this program calls that predicate `close/2`, but **`close/2` is a built-in in SWI-Prolog** (it closes file streams). Loading the textbook version gives:
+> ```
+> ERROR: No permission to modify static procedure `close/2'
+> ```
+> Renamed to `near/2` above; verified working (`monkey CAN reach bananas`). **Other built-in names to avoid redefining:** `append`, `member`, `length`, `delete`, `print`, `write`, `sort`, `last`, `between`, `msort`. If a predicate errors for no visible reason, rename it first.
 
 ## The general recipe for ANY FOPL word-problem question
 1. Underline every noun → these become your predicates/atoms.

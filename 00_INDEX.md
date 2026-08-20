@@ -43,3 +43,15 @@ Built from a full read of all 8 Lab Sheets, all 8 Lab Reports, and 4 photographe
 - **Modern Prolog CSP style**: Lab 5's actual report uses SWI-Prolog's `library(clpfd)` (`ins`, `all_different`, `#=`, `label`), which is cleaner than the classical `member`+backtracking style from the lab sheet. Both shown in `03_prolog_csp.md` — use whichever your exam machine's Prolog supports.
 - **Naive Bayes/Logistic Regression**: the real pipeline uses a 3-way stratified split (60/20/20 train/val/test) and includes a Decision Tree capacity study — not just a simple 2-way split. Fixed in `12_naive_bayes_logistic_regression.md`.
 - **Horses/Charlie FOPL puzzle**: the literal facts given in Lab Sheet 2 do **not** state Bluebeard is a horse — so strictly, "is Charlie a horse?" is *not provable* from the given facts alone. The submitted lab report adds `horse(bluebeard).` as an extra fact to make it provable. Both readings are explained in `02_prolog_fopl.md` — know the subtlety in case it's asked as a trick "why" follow-up.
+
+## Corrections from the SWI-Prolog verification pass (2026-08-20)
+Every Prolog program in `01`–`03` was executed on this laptop (SWI-Prolog 9.0.4). Four real errors were found and fixed:
+
+1. **`<>` is not SWI-Prolog syntax.** It is Turbo/Visual Prolog. On SWI it is a hard syntax error (`Operator expected`). All Style A code in `03` rewritten to `=\=` (numbers) / `\==` (atoms). Operator table added to `01` and `03`.
+2. **`=` does not evaluate arithmetic.** The classical SEND+MORE in `03` used `D+E = Y+10*C1`, which silently *fails* in SWI — `=` is unification. Changed to `=:=`, and the 28-line pairwise not-equal chain replaced with an `all_diff/1` helper. The corrected version runs and returns `[9,5,6,7,1,0,8,2]`.
+3. **A + A = BC has FIVE solutions, not one.** `03` claimed only A=5,B=1,C=0. Also valid: (6,1,2), (7,1,4), (8,1,6), (9,1,8). All satisfy every stated constraint.
+4. **`close/2` is an SWI built-in.** The Monkey-Banana program in `02` fails to load with `No permission to modify static procedure 'close/2'`. Renamed to `near/2`. List of other built-in names to avoid added.
+
+Verified-correct as written (no change needed): both `clpfd` programs in `03`, all list predicates in `01`, all FOPL programs in `02`, 4-Queens classical (2 solutions), map colouring (18 colourings), and the BFS/DFS code in `04` (outputs `['A','C','F']` and `['A','B','E','F']` exactly as commented).
+
+Setup facts for exam day: SWI-Prolog 9.0.4 at `/usr/bin/swipl`; VS Code extension `amauryrabouan.new-vsc-prolog` installed and pointed at it. Run instructions are at the bottom of `01_prolog_basics.md`.
